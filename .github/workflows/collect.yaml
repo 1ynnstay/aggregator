@@ -1,9 +1,9 @@
-name: Collect (every 5h)
+name: Collect (every 2h)
 
 on:
-  # executed every 5 hours
+  # executed every 2 hours
   schedule:
-    - cron: "0 */5 * * *"
+    - cron: "0 */2 * * *"
   workflow_dispatch:
 
 # === 暂时注释掉并发控制以排除影响 ===
