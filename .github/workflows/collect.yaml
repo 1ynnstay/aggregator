@@ -1,29 +1,21 @@
-name: Collect
+name: Collect (every 5h)
+
 on:
   # executed every 5 hours
   schedule:
     - cron: "0 */5 * * *"
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.repository }}
-  cancel-in-progress: true
+# === 暂时注释掉并发控制以排除影响 ===
+# concurrency:
+#   group: ${{ github.repository }}
+#   cancel-in-progress: true
 
 env:
-  # time zone
   TZ: Asia/Shanghai
-
-  # github access token
   GIST_PAT: ${{ secrets.GIST_PAT }}
-
-  # github username and gist id, separated by '/'
   GIST_LINK: ${{ secrets.GIST_LINK }}
-
-  # the url to the list of airports that you maintain yourself
-  # each line include domain, coupon and invitation code, the domain must be included, and the latter two items are optional
   CUSTOMIZE_LINK: ${{ secrets.CUSTOMIZE_LINK }}
-
-  # include special protocols, such as vless hysteria2 and hysteria
   ENABLE_SPECIAL_PROTOCOLS: ${{ vars.ENABLE_SPECIAL_PROTOCOLS }}
 
 jobs:
@@ -67,5 +59,13 @@ jobs:
       - name: Collect
         run: python -u subscribe/collect.py --all --overwrite --skip
 
-      - name: Timestamp
-        run: date
+      - name: Timestamp (UTC & Shanghai)
+        run: |
+          echo "UTC time: $(date -u)"
+          echo "Shanghai time: $(TZ='Asia/Shanghai' date)"
+
+      # 可选：打印 GITHUB_RUN_ID 等信息方便追踪
+      - name: Debug run info
+        run: |
+          echo "Run ID: $GITHUB_RUN_ID"
+          echo "Event: $GITHUB_EVENT_NAME"
